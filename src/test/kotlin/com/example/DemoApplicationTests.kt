@@ -62,7 +62,7 @@ class DemoApplicationTests {
         latch.await(10, TimeUnit.SECONDS)
 
         if (exceptions.isNotEmpty()) {
-            fail("Caught one or more exceptions during multithreaded test, see console")
+            fail("Caught one or more exceptions during multithreaded test, see console", exceptions.first())
         }
     }
 }
@@ -75,6 +75,9 @@ internal class ContainerInitializer : ApplicationContextInitializer<Configurable
     override fun initialize(applicationContext: ConfigurableApplicationContext) {
         elasticsearchContainer.start()
 
-        TestPropertyValues.of("spring.elasticsearch.rest.uris", "http://${elasticsearchContainer.httpHostAddress}")
+        TestPropertyValues.of(
+            "spring.jpa.properties.hibernate.search.backend.hosts=${elasticsearchContainer.httpHostAddress}",
+            "spring.elasticsearch.rest.uris=http://${elasticsearchContainer.httpHostAddress}",
+        ).applyTo(applicationContext)
     }
 }
