@@ -3,22 +3,13 @@ package com.example
 import ca.uhn.fhir.context.FhirContext
 import ca.uhn.fhir.jpa.config.BaseConfig
 import ca.uhn.fhir.jpa.config.HapiFhirLocalContainerEntityManagerFactoryBean
-import ca.uhn.fhir.model.primitive.IdDt
-import ca.uhn.fhir.rest.api.RestOperationTypeEnum
-import ca.uhn.fhir.rest.api.server.RequestDetails
 import ca.uhn.fhir.rest.client.apache.ApacheRestfulClientFactory
-import ca.uhn.fhir.rest.server.interceptor.auth.AuthorizationInterceptor
-import ca.uhn.fhir.rest.server.interceptor.auth.IAuthRule
-import ca.uhn.fhir.rest.server.interceptor.auth.PolicyEnum
-import ca.uhn.fhir.rest.server.interceptor.auth.RuleBuilder
 import ca.uhn.fhir.spring.boot.autoconfigure.FhirProperties
 import ca.uhn.fhir.spring.boot.autoconfigure.FhirRestfulServerCustomizer
 import org.elasticsearch.client.RequestOptions
 import org.elasticsearch.client.RestHighLevelClient
 import org.elasticsearch.client.indices.PutIndexTemplateRequest
 import org.elasticsearch.common.settings.Settings
-import org.hl7.fhir.r4.model.Patient
-import org.hl7.fhir.r4.model.QuestionnaireResponse
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties
@@ -76,27 +67,6 @@ class DemoConfig(val fhirProperties: FhirProperties) {
     @Bean
     fun serverCustomizer() = FhirRestfulServerCustomizer {
         it.registerInterceptor(DemoAuthorizationInterceptor())
-    }
-}
-
-internal class DemoAuthorizationInterceptor : AuthorizationInterceptor(PolicyEnum.ALLOW) {
-    override fun buildRuleList(requestDetails: RequestDetails): List<IAuthRule> {
-        if (requestDetails.restOperationType == RestOperationTypeEnum.METADATA) {
-            return RuleBuilder().allowAll().build()
-        }
-
-        return demoRules()
-    }
-
-    private fun demoRules(): List<IAuthRule> {
-        val idType = IdDt("Patient", "42")
-        return RuleBuilder()
-            .allow("Allow to read patient").read().resourcesOfType(Patient::class.java).withAnyId()
-            .andThen()
-
-            .allow("Allow read the current patient QuestionnaireResponses").read()
-            .resourcesOfType(QuestionnaireResponse::class.java).inCompartment("Patient", idType)
-            .build()
     }
 }
 
