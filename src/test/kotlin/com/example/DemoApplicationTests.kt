@@ -17,8 +17,8 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.testcontainers.elasticsearch.ElasticsearchContainer
 import org.testcontainers.junit.jupiter.Testcontainers
-import java.io.IOException
 import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -45,21 +45,25 @@ class DemoApplicationTests {
             .resource(QuestionnaireResponse().setSubject(Reference(patient.idElement)))
             .execute()
 
-        val numberOfThreads = 100
+        val numberOfThreads = 10
         val latch = CountDownLatch(numberOfThreads)
+
+        val exceptions = mutableListOf<Throwable>()
         (0 until numberOfThreads).map {
             thread {
-                try {
-                    fhirClient.search<Bundle>()
-                        .forResource(QuestionnaireResponse::class.java).execute().entry
-                } catch (ex: IOException) {
-                    // ignore, it's just noice
-                } finally {
-                    latch.countDown()
-                }
+                fhirClient.search<Bundle>()
+                    .forResource(QuestionnaireResponse::class.java).execute().entry
+                latch.countDown()
+            }.apply {
+                uncaughtExceptionHandler = Thread.UncaughtExceptionHandler { _, e -> exceptions.add(e) }
             }
         }
-        latch.await()
+
+        latch.await(10, TimeUnit.SECONDS)
+
+        if (exceptions.isNotEmpty()) {
+            fail("Caught one or more exceptions during multithreaded test, see console")
+        }
     }
 }
 

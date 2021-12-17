@@ -29,3 +29,5 @@ hapi:
 logging:
   level:
     root: info
+    org.hibernate: off
+    org.quartz: off
