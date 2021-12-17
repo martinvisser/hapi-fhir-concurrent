@@ -1,0 +1,31 @@
+spring:
+  batch:
+    job:
+      enabled: false
+  flyway:
+    enabled: false
+  jpa:
+    properties:
+      hibernate:
+        hbm2ddl:
+          auto: create-drop
+        dialect: ca.uhn.fhir.jpa.model.dialect.HapiFhirPostgres94Dialect
+        physical_naming_strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
+        search:
+          backend:
+            type: elasticsearch
+            analysis:
+              configurer: ca.uhn.fhir.jpa.search.elastic.HapiElasticsearchAnalysisConfigurer
+            protocol: http
+  main:
+    allow-bean-definition-overriding: true
+
+hapi:
+  fhir:
+    server:
+      url: "http://localhost:8888"
+    version: r4
+
+logging:
+  level:
+    root: info
