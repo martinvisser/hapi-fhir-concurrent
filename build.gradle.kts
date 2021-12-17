@@ -15,8 +15,9 @@ repositories {
     mavenCentral()
 }
 
-extra["testcontainersVersion"] = "1.16.2"
 extra["hapiFhirVersion"] = "5.6.1"
+extra["postgresVersion"] = "42.3.1"
+extra["testcontainersVersion"] = "1.16.2"
 
 dependencyManagement {
     imports {
@@ -42,6 +43,7 @@ dependencies {
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("org.testcontainers:postgresql")
     testImplementation("org.testcontainers:elasticsearch")
+    testImplementation("org.postgresql:postgresql:${property("postgresVersion")}")
 }
 
 

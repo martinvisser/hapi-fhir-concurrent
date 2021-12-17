@@ -9,9 +9,11 @@ spring:
       hibernate:
         hbm2ddl:
           auto: create-drop
-        dialect: ca.uhn.fhir.jpa.model.dialect.HapiFhirPostgres94Dialect
+        dialect: org.hibernate.dialect.PostgreSQL94Dialect
         physical_naming_strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
         search:
+          schema_management:
+            strategy: drop-and-create-and-drop
           backend:
             type: elasticsearch
             analysis:
