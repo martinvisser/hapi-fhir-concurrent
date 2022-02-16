@@ -5,7 +5,6 @@ import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.QuestionnaireResponse;
 import org.hl7.fhir.r4.model.Reference;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,6 +21,8 @@ import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
+
+import static org.junit.jupiter.api.Assertions.fail;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ContextConfiguration(initializers = ContainerInitializer.class)
@@ -60,12 +61,13 @@ class DemoApplicationTests {
                         exceptions.add(e);
                     }
                     latch.countDown();
-                }));
+                }).start()
+        );
 
         latch.await(10, TimeUnit.SECONDS);
 
         if (!exceptions.isEmpty()) {
-            Assertions.fail("Caught one or more exceptions during multithreaded test, see console", exceptions.get(0));
+            fail("Caught one or more exceptions during multithreaded test, see console", exceptions.get(0));
         }
     }
 }
