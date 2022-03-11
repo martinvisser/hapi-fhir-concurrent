@@ -21,6 +21,7 @@ spring:
             protocol: http
   main:
     allow-bean-definition-overriding: true
+    allow-circular-references: true
 
 hapi:
   fhir:

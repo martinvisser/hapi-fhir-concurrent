@@ -1,5 +1,5 @@
 plugins {
-    id("org.springframework.boot") version "2.5.8"
+    id("org.springframework.boot") version "2.6.4"
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
     java
 }
@@ -13,8 +13,8 @@ repositories {
     mavenCentral()
 }
 
-extra["hapiFhirVersion"] = "5.6.2"
-extra["postgresVersion"] = "42.3.2"
+extra["hapiFhirVersion"] = "5.7.0"
+extra["postgresVersion"] = "42.3.3"
 extra["testcontainersVersion"] = "1.16.3"
 
 dependencyManagement {
@@ -22,6 +22,7 @@ dependencyManagement {
         mavenBom("org.testcontainers:testcontainers-bom:${property("testcontainersVersion")}")
     }
 }
+
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-logging")
